@@ -87,10 +87,7 @@ export default function Home() {
   });
 
   const [activeQuestion, setActiveQuestion] = useState<number>(0);
-
-  // const handleChange = (e: SelectChangeEvent) => {
-  //   const { name, value } = e.target;
-  //   name && value && setConfig((val) => ({ ...val, [name]: value }));
+const defaultTestCode= 'def func():\n    print(\"hello world\")\n    return \"hello world\"\n    \ndef test(output):\n    assert output == \"hello world\", \"not passed\"\ntest(func())'
   // };
 
   // const handleLanguage = (e: SelectChangeEvent) => {
@@ -211,7 +208,7 @@ export default function Home() {
               <Box flexGrow={1}>
                 <Editor
                   height="100%"
-                  defaultValue="#some comment"
+                  defaultValue={defaultTestCode}
                   {...config}
                   onChange={(value) => setCode(`${value}`)}
                 />
@@ -264,16 +261,6 @@ export default function Home() {
                 </Box>
               </Stack>
             </Stack>
-
-            {/* <Box>
-            <IconButton disabled={loading} onClick={submit}>
-              {loading ? (
-                <CircularProgress variant="indeterminate" />
-              ) : (
-                <FaPlay />
-              )}
-            </IconButton>
-          </Box> */}
           </Stack>
         </Box>
         <Box>
