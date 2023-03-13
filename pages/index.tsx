@@ -52,6 +52,7 @@ const questions: QuestionInterface[] = [
       { title: "Print your variable to the screen" },
       { title: "Click run an compile" },
     ],
+    output:"/nhello world/n"
   },
   {
     instruction: "This is to test your basic python list skill",
@@ -291,6 +292,9 @@ const defaultTestCode= 'def func():\n    print(\"hello world\")\n    return \"he
                       // color: apiResponse.error ? "red" : "inherit",
                     }}
                   >
+                    {
+                      
+                    }
                     {apiResponse?.output || apiResponse?.error}
                   </Typography>
                 </Box>
