@@ -19,5 +19,6 @@ export interface Step {
 export interface QuestionInterface {
   instruction: string;
   name: string;
+  output?:string;
   steps: Step[];
 }
