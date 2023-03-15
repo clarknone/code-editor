@@ -20,11 +20,7 @@ import React, { useState } from "react";
 
 import { FaPlay, FaTimes } from "react-icons/fa";
 import { runCode } from "../service/api";
-import {
-  ApiResponse,
-  LanguageOption,
-  QuestionInterface,
-} from "../interface/api";
+import { ApiResponse, LanguageOption, QuestionInterface } from "../interface/api";
 import QuestionDisplayComponent from "../component/questionDisplay";
 
 const languages: LanguageOption[] = [
@@ -52,7 +48,7 @@ const questions: QuestionInterface[] = [
       { title: "Print your variable to the screen" },
       { title: "Click run an compile" },
     ],
-    output:"/nhello world/n"
+    output: "/nhello world/n",
   },
   {
     instruction: "This is to test your basic python list skill",
@@ -78,17 +74,18 @@ const questions: QuestionInterface[] = [
   },
 ];
 
+const defaultTestCode = `\ndef func():\n    return \"hello world\"\n\ndef add(x,y):\n    return x + y\n\ndef testHello(output):\n    expected = \"hello world\"\n    assert output == \"hello world\", \"not passed\"\n    return {\"output\":output,\"expected\":expected,\"input\":''}\n\n\ndef testSum(func):\n    testCases = [\n        {\"input\":[3,2], \"expected\": 3+2},\n        {\"input\":[5,10], \"expected\": 5+10}\n    ]\n    result = {\n        \"testCases\":0,\"failed\":0,\"passed\":0\n    }\n    for case in testCases:\n        result[\"testCases\"]+=1\n        output = func(*case[\"input\"])\n        if output==case[\"expected\"]:\n            result[\"passed\"]+=1\n        else:result[\"failed\"]+=1\n    return result\n\nimport json\n##print(json.dumps(testHello(func()), indent=4))\n\nprint(json.dumps(testSum(add), indent=4))\n\n`;
+
 export default function Home() {
   const [config, setConfig] = useState({ language: selectedLanguage.value });
   const [loading, setLoading] = useState(false);
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState(defaultTestCode);
   const [userInput, setUserInput] = useState("");
   const [apiResponse, setApiResponse] = useState<ApiResponse>({
     statusCode: 2,
   });
 
   const [activeQuestion, setActiveQuestion] = useState<number>(0);
-const defaultTestCode= 'def func():\n    print(\"hello world\")\n    return \"hello world\"\n    \ndef test(output):\n    assert output == \"hello world\", \"not passed\"\ntest(func())'
   // };
 
   // const handleLanguage = (e: SelectChangeEvent) => {
@@ -159,14 +156,7 @@ const defaultTestCode= 'def func():\n    print(\"hello world\")\n    return \"he
             // minHeight={"800px"}
             height="100%"
           >
-            <Stack
-              justifyContent={"center"}
-              alignItems="center"
-              width="100%"
-              height="100%"
-              bgcolor="#eee"
-              p={1}
-            >
+            <Stack justifyContent={"center"} alignItems="center" width="100%" height="100%" bgcolor="#eee" p={1}>
               <Stack justifyContent={"center"} width={"100%"} flexGrow={1}>
                 {activeQuestion < questions.length ? (
                   <Box>
@@ -178,11 +168,7 @@ const defaultTestCode= 'def func():\n    print(\"hello world\")\n    return \"he
                   </Box>
                 )}
               </Stack>
-              <Stack
-                width={"100%"}
-                direction={"row"}
-                justifyContent="space-between"
-              >
+              <Stack width={"100%"} direction={"row"} justifyContent="space-between">
                 <Button
                   variant="contained"
                   color="secondary"
@@ -228,10 +214,7 @@ const defaultTestCode= 'def func():\n    print(\"hello world\")\n    return \"he
                       endAdornment: (
                         <>
                           {userInput.length ? (
-                            <IconButton
-                              color="primary"
-                              onClick={() => setUserInput("")}
-                            >
+                            <IconButton color="primary" onClick={() => setUserInput("")}>
                               <FaTimes fontSize={"0.8em"} />
                             </IconButton>
                           ) : null}
@@ -242,12 +225,7 @@ const defaultTestCode= 'def func():\n    print(\"hello world\")\n    return \"he
                   />
                 </Box>
                 <Box>
-                  <Button
-                    variant="outlined"
-                    disabled={loading}
-                    size="small"
-                    onClick={submit}
-                  >
+                  <Button variant="outlined" disabled={loading} size="small" onClick={submit}>
                     {loading ? (
                       <CircularProgress size={"2em"} variant="indeterminate" />
                     ) : (
@@ -292,9 +270,7 @@ const defaultTestCode= 'def func():\n    print(\"hello world\")\n    return \"he
                       // color: apiResponse.error ? "red" : "inherit",
                     }}
                   >
-                    {
-                      
-                    }
+                    {}
                     {apiResponse?.output || apiResponse?.error}
                   </Typography>
                 </Box>
