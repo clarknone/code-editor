@@ -13,7 +13,7 @@ export default function QuestionDisplayComponent(props: QuestionInterface) {
       </Typography>
       <Stack mt={"2vw"}>
         {props.steps.map((item, index) => (
-          <Typography key={item.title} variant="h6" fontSize={"0.8em"}>
+          <Typography variant="h6" fontSize={"0.8em"}>
             Step {index + 1}: {item.title}
           </Typography>
         ))}

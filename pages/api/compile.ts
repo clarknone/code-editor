@@ -12,7 +12,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse>
 ) {
-  let response: ApiResponse = { statusCode: 400, error: "" };
+  let response: ApiResponse = { statusCode: 400, error: "bad request" };
   if (req.method != "POST") {
     response.statusCode = 200;
     response.error = "only post is allowed";

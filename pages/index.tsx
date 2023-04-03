@@ -4,9 +4,6 @@ import {
   CircularProgress,
   IconButton,
   LinearProgress,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
   Stack,
   Step,
   StepLabel,
@@ -22,6 +19,8 @@ import { FaPlay, FaTimes } from "react-icons/fa";
 import { runCode } from "../service/api";
 import { ApiResponse, LanguageOption, QuestionInterface } from "../interface/api";
 import QuestionDisplayComponent from "../component/questionDisplay";
+import { QuestionList } from "../service/data";
+import ResultComponent from "../component/resultComponent";
 
 const languages: LanguageOption[] = [
   { title: "Python3", value: "python", compileValue: "python3" },
@@ -37,55 +36,20 @@ const theme = [
 
 let selectedLanguage: LanguageOption = languages[0];
 
-const questions: QuestionInterface[] = [
-  {
-    instruction: "This is to test your basic python skill",
-    name: "Basic",
-    steps: [
-      { title: "Add a comment to your code" },
-      { title: "Name your variable" },
-      { title: "Assign value to your variable" },
-      { title: "Print your variable to the screen" },
-      { title: "Click run an compile" },
-    ],
-    output: "/nhello world/n",
-  },
-  {
-    instruction: "This is to test your basic python list skill",
-    name: "List",
-    steps: [
-      { title: "Add a comment to your code" },
-      { title: "Create an empty list variable" },
-      { title: "Add two numbers to your list variable" },
-      { title: "Print your list variable to the screen" },
-      { title: "Click run an compile" },
-    ],
-  },
-  {
-    instruction: "This is to test your basic python dictionary skill",
-    name: "Dictionaries",
-    steps: [
-      { title: "Add a comment to your code" },
-      { title: "Create an empty dictionary variable" },
-      { title: "Add two numbers to your dictionary variable" },
-      { title: "Print your dictionary variable to the screen" },
-      { title: "Click run an compile" },
-    ],
-  },
-];
-
-const defaultTestCode = `\ndef func():\n    return \"hello world\"\n\ndef add(x,y):\n    return x + y\n\ndef testHello(output):\n    expected = \"hello world\"\n    assert output == \"hello world\", \"not passed\"\n    return {\"output\":output,\"expected\":expected,\"input\":''}\n\n\ndef testSum(func):\n    testCases = [\n        {\"input\":[3,2], \"expected\": 3+2},\n        {\"input\":[5,10], \"expected\": 5+10}\n    ]\n    result = {\n        \"testCases\":0,\"failed\":0,\"passed\":0\n    }\n    for case in testCases:\n        result[\"testCases\"]+=1\n        output = func(*case[\"input\"])\n        if output==case[\"expected\"]:\n            result[\"passed\"]+=1\n        else:result[\"failed\"]+=1\n    return result\n\nimport json\n##print(json.dumps(testHello(func()), indent=4))\n\nprint(json.dumps(testSum(add), indent=4))\n\n`;
-
 export default function Home() {
   const [config, setConfig] = useState({ language: selectedLanguage.value });
   const [loading, setLoading] = useState(false);
-  const [code, setCode] = useState(defaultTestCode);
+  const [code, setCode] = useState("");
   const [userInput, setUserInput] = useState("");
   const [apiResponse, setApiResponse] = useState<ApiResponse>({
     statusCode: 2,
   });
 
   const [activeQuestion, setActiveQuestion] = useState<number>(0);
+
+  // const handleChange = (e: SelectChangeEvent) => {
+  //   const { name, value } = e.target;
+  //   name && value && setConfig((val) => ({ ...val, [name]: value }));
   // };
 
   // const handleLanguage = (e: SelectChangeEvent) => {
@@ -101,7 +65,7 @@ export default function Home() {
     setLoading(true);
     const language = selectedLanguage.compileValue || selectedLanguage.value;
     runCode({
-      script: code,
+      script: code + (QuestionList[activeQuestion].testCase || ""),
       language: language,
       stdin: userInput,
     })
@@ -121,6 +85,9 @@ export default function Home() {
       });
   };
 
+  const defaultValue = `#Write your code here`;
+  // const defaultValue = `\ndef func():\n    return \"hello world\"\n\ndef add(x,y):\n    return x + y\n\ndef testHello(output):\n    expected = \"hello world\"\n    assert output == \"hello world\", \"not passed\"\n    return {\"output\":output,\"expected\":expected,\"input\":''}\n\n\ndef testSum(func):\n    testCases = [\n        {\"input\":[3,2], \"expected\": 3+2,\"passed\":False,\"output\":\"\"},\n        {\"input\":[5,10], \"expected\": 5+10,\"passed\":False,\"output\":\"\"},\n        {\"input\":[-5,10], \"expected\": 5+10,\"passed\":False,\"output\":\"\"},\n    ]\n    result = {\n        \"total\":len(testCases),\"failed\":0,\"passed\":0\n    }\n    for case in testCases:\n        output = func(*case[\"input\"])\n        case[\"output\"] = output\n        if output==case[\"expected\"]:\n            case['passed'] = True\n            result[\"passed\"]+=1\n        else:result[\"failed\"]+=1\n    return {\"result\":result, \"test\":testCases}\n\nimport json\n##print(json.dumps(testHello(func()), indent=4))\n\nprint(testSum(add))\n\n`;
+  // const defaultValue = `\n\n\n\ndef testSum(func):\n    testCases = [\n        {\"input\":[3,2], \"expected\": 3+2,\"passed\":False,\"output\":\"\"},\n        {\"input\":[5,10], \"expected\": 5+10,\"passed\":False,\"output\":\"\"},\n        {\"input\":[-5,10], \"expected\": 5+10,\"passed\":False,\"output\":\"\"},\n    ]\n    result = {\n        \"total\":len(testCases),\"failed\":0,\"passed\":0\n    }\n    for case in testCases:\n        output = func(*case[\"input\"])\n        case[\"output\"] = output\n        if output==case[\"expected\"]:\n            case['passed'] = True\n            result[\"passed\"]+=1\n        else:result[\"failed\"]+=1\n    return {\"result\":result, \"test\":testCases}\n\nimport json\n##print(json.dumps(testHello(func()), indent=4))\n\nprint(testSum(add))\n\n`;
   return (
     <Box>
       <Head>
@@ -133,10 +100,10 @@ export default function Home() {
           <Typography>Assignment Progress</Typography>
           <Box flexGrow={1}>
             <Stepper activeStep={activeQuestion} alternativeLabel>
-              {new Array(questions.length + 1).fill(0).map((item, index) =>
-                index < questions.length ? (
+              {new Array(QuestionList.length + 1).fill(0).map((item, index) =>
+                index < QuestionList.length ? (
                   <Step key={`${item}-${index}`}>
-                    <StepLabel>{questions[index].name}</StepLabel>
+                    <StepLabel>{QuestionList[index].name}</StepLabel>
                   </Step>
                 ) : (
                   <Step key={`${item}-${index}`}>
@@ -158,9 +125,9 @@ export default function Home() {
           >
             <Stack justifyContent={"center"} alignItems="center" width="100%" height="100%" bgcolor="#eee" p={1}>
               <Stack justifyContent={"center"} width={"100%"} flexGrow={1}>
-                {activeQuestion < questions.length ? (
+                {activeQuestion < QuestionList.length ? (
                   <Box>
-                    <QuestionDisplayComponent {...questions[activeQuestion]} />
+                    <QuestionDisplayComponent {...QuestionList[activeQuestion]} />
                   </Box>
                 ) : (
                   <Box>
@@ -185,7 +152,7 @@ export default function Home() {
                   size="small"
                   onClick={() => setActiveQuestion((val) => val + 1)}
                   color="primary"
-                  disabled={activeQuestion >= questions.length}
+                  disabled={activeQuestion >= QuestionList.length}
                 >
                   Next
                 </Button>
@@ -195,7 +162,10 @@ export default function Home() {
               <Box flexGrow={1}>
                 <Editor
                   height="100%"
-                  defaultValue={defaultTestCode}
+                  key={activeQuestion}
+                  // defaultValue="#some comment"
+                  // defaultValue={defaultValue}
+                  defaultValue={QuestionList[activeQuestion].defaultCode || defaultValue}
                   {...config}
                   onChange={(value) => setCode(`${value}`)}
                 />
@@ -240,6 +210,16 @@ export default function Home() {
                 </Box>
               </Stack>
             </Stack>
+
+            {/* <Box>
+            <IconButton disabled={loading} onClick={submit}>
+              {loading ? (
+                <CircularProgress variant="indeterminate" />
+              ) : (
+                <FaPlay />
+              )}
+            </IconButton>
+          </Box> */}
           </Stack>
         </Box>
         <Box>
@@ -251,8 +231,8 @@ export default function Home() {
             mb={2}
             rowGap={"0.2em"}
           >
-            <Typography fontWeight="600" fontSize={"0.8em"}>
-              Output
+            <Typography fontWeight="600" fontSize={"1.2em"} my={"0.5em"}>
+              Result
             </Typography>
             <Box flexGrow={1}>
               {loading ? (
@@ -264,15 +244,15 @@ export default function Home() {
                 />
               ) : (
                 <Box>
-                  <Typography
+                  {/* <Typography
                     style={{
                       whiteSpace: "pre-line",
                       // color: apiResponse.error ? "red" : "inherit",
                     }}
                   >
-                    {}
                     {apiResponse?.output || apiResponse?.error}
-                  </Typography>
+                  </Typography> */}
+                  <ResultComponent output={apiResponse.output || ""} question={QuestionList[activeQuestion]} />
                 </Box>
               )}
             </Box>
